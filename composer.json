@@ -1,0 +1,8 @@
+{
+    "name": "dnadesign/silverstripe-alert-banners",
+    "description": "Generic Alert Banners - generally displayed at the top of a page.",
+    "license": "BSD-3-Clause",
+    "extra": {
+        "installer-name": "silverstripe-alert-banners"
+    }
+}

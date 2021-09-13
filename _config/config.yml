@@ -1,0 +1,6 @@
+---
+name: silverstripe-alert-banners
+---
+PageController:
+  extensions:
+    - DNADesign\AlertBanners\Control\ControllerExtension
