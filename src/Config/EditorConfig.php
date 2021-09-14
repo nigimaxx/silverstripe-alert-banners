@@ -7,6 +7,9 @@ use SilverStripe\Forms\HTMLEditor\HTMLEditorConfig;
 
 class EditorConfig
 {
+    /**
+     * Creates a new 'alert-banners' HTMLEditorConfig
+     */
     public static function create()
     {
         $editor = HTMLEditorConfig::get('alert-banners');
