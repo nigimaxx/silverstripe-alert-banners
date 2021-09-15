@@ -5,7 +5,6 @@ namespace DNADesign\AlertBanners\Model;
 use Page;
 use SilverStripe\CMS\Model\RedirectorPage;
 use SilverStripe\Control\Cookie;
-use SilverStripe\Forms\LiteralField;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\FieldType\DBField;
 use SilverStripe\ORM\FieldType\DBHTMLText;
@@ -113,9 +112,12 @@ class AlertBanner extends DataObject
      */
     public function getPreviewLink()
     {
+        $excludeFilter = ['ClassName' => RedirectorPage::class];
         $excludeOnPages = $this->getArrayOfExcludedPageIDs();
-        $randomPage = Page::get()
-            ->excludeAny(['ID' => $excludeOnPages, 'ClassName' => RedirectorPage::class]);
+        if (count($excludeOnPages)) {
+            $excludeFilter['ID'] = $excludeOnPages;
+        }
+        $randomPage = Page::get()->excludeAny($excludeFilter);
         $html = '<a href="' . $randomPage->first()->AbsoluteLink() . '?stage=Stage" target="_blank">Preview</a>';
         return DBField::create_field(DBHTMLText::class, $html);
     }
