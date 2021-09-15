@@ -2,6 +2,8 @@
 
 namespace DNADesign\AlertBanners\Model;
 
+use Page;
+use SilverStripe\CMS\Model\RedirectorPage;
 use SilverStripe\Control\Cookie;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\ORM\DataObject;
@@ -82,6 +84,10 @@ class AlertBanner extends DataObject
     {
         $fields = parent::getCMSFields();
         // main tab
+        if ($this->ID) {
+            $titleField = $fields->dataFieldByName('Title');
+            $titleField->setDescription($this->getPreviewLink());
+        }
         $contentField = $fields->dataFieldByName('Content');
         $contentField->setEditorConfig('alert-banners')->setRows(4);
         $expiryField = $fields->dataFieldByName('CookieLength');
@@ -91,7 +97,7 @@ class AlertBanner extends DataObject
         if ($this->ID) {
             $gridField = $fields->dataFieldByName('DisplayRules');
             $gridField->setDescription(
-                '<p class="alert alert-primary">
+                '<p class="alert alert-primary" style="margin-top:20px;">
                     This alert banner will be displayed on all pages be default. You can add exclude/include rules for pages here.<br>
                     This alert banner will <strong>always show</strong> on pages that are added as an <strong>include</strong> rule.<br>
                     This alert banner will not be shown on pages (or any of their child pages) that are added as an <strong>exclude</strong> rule.
@@ -99,6 +105,19 @@ class AlertBanner extends DataObject
             );
         }
         return $fields;
+    }
+
+    /**
+     * Finds a random page not in the exclusion list and returns the a preview link as HTML
+     * @return string
+     */
+    public function getPreviewLink()
+    {
+        $excludeOnPages = $this->getArrayOfExcludedPageIDs();
+        $randomPage = Page::get()
+            ->excludeAny(['ID' => $excludeOnPages, 'ClassName' => RedirectorPage::class]);
+        $html = '<a href="' . $randomPage->first()->AbsoluteLink() . '?stage=Stage" target="_blank">Preview</a>';
+        return DBField::create_field(DBHTMLText::class, $html);
     }
 
     /**
@@ -131,6 +150,37 @@ class AlertBanner extends DataObject
             $status =  '<i class="font-icon-check-mark-circle btn--icon-md"></i>Published';
         }
         return DBField::create_field(DBHTMLText::class, $status);
+    }
+
+    /**
+     * Returns an array of page ID's for which the alert banner should be displayed on
+     * @return array
+     */
+    public function getArrayOfIncludedPageIDs()
+    {
+        $ids = [];
+        $includeRules = $this->DisplayRules()->filter(['Rule' => 'Include']);
+        foreach ($includeRules as $includeRule) {
+            $page = $includeRule->Page();
+            $ids[] = $page->ID;
+        }
+        return $ids;
+    }
+
+    /**
+     * Returns an array of page ID's for which the alert banner should NOT be displayed on
+     * @return array
+     */
+    public function getArrayOfExcludedPageIDs()
+    {
+        $ids = [];
+        $excludeRules = $this->DisplayRules()->filter(['Rule' => 'Exclude']);
+        foreach ($excludeRules as $excludeRule) {
+            $page = $excludeRule->Page();
+            $ids[] = $page->ID;
+            $ids = array_merge($ids, $page->getDescendantIDList());
+        }
+        return $ids;
     }
 
     /**
