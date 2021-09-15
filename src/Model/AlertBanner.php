@@ -2,6 +2,7 @@
 
 namespace DNADesign\AlertBanners\Model;
 
+use SilverStripe\Control\Cookie;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\FieldType\DBField;
@@ -31,6 +32,14 @@ class AlertBanner extends DataObject
         'Content' => 'HTMLText',
         'DisplayFrom' => 'Datetime',
         'DisplayTo' => 'Datetime',
+        'CookieLength' => 'Int',
+    ];
+
+    /**
+     * @var array
+     */
+    private static $defaults = [
+        'CookieLength' => 30
     ];
 
     /**
@@ -75,16 +84,20 @@ class AlertBanner extends DataObject
         // main tab
         $contentField = $fields->dataFieldByName('Content');
         $contentField->setEditorConfig('alert-banners')->setRows(4);
+        $expiryField = $fields->dataFieldByName('CookieLength');
+        $expiryField->setDescription('The of number of days that this alert banner will be hidden from a user for once they have dismissed it.');
 
         // display rules tab
-        $gridField = $fields->dataFieldByName('DisplayRules');
-        $gridField->setDescription(
-            '<p class="alert alert-primary">
-                This alert banner will be displayed on all pages be default. You can add exclude/include rules for pages here.<br>
-                This alert banner will <strong>always show</strong> on pages that are added as an <strong>include</strong> rule.<br>
-                This alert banner will not be shown on pages (or any of their child pages) that are added as an <strong>exclude</strong> rule.
-            </p>'
-        );
+        if ($this->ID) {
+            $gridField = $fields->dataFieldByName('DisplayRules');
+            $gridField->setDescription(
+                '<p class="alert alert-primary">
+                    This alert banner will be displayed on all pages be default. You can add exclude/include rules for pages here.<br>
+                    This alert banner will <strong>always show</strong> on pages that are added as an <strong>include</strong> rule.<br>
+                    This alert banner will not be shown on pages (or any of their child pages) that are added as an <strong>exclude</strong> rule.
+                </p>'
+            );
+        }
         return $fields;
     }
 
@@ -118,6 +131,16 @@ class AlertBanner extends DataObject
             $status =  '<i class="font-icon-check-mark-circle btn--icon-md"></i>Published';
         }
         return DBField::create_field(DBHTMLText::class, $status);
+    }
+
+    /**
+     * When a user clicks the close button on an alert banner a cookie is created
+     * This function checks if the cookie is set for the alert banner so the user won't be shown it again until the cookie expires
+     * @return boolean
+     */
+    public function HideBanner()
+    {
+        return Cookie::get('hidealertbanner-' . $this->ID);
     }
 
     /**

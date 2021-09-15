@@ -1,5 +1,7 @@
 <div class="alertbanners">
     <% loop $AlertBanners %>
-        <% include DNADesign/AlertBanners/Includes/AlertBanner %>
+        <% if not $HideBanner %>
+            <% include DNADesign/AlertBanners/Includes/AlertBanner %>
+        <% end_if %>
     <% end_loop %>
 </div>

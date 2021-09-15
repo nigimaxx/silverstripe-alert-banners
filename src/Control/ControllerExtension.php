@@ -5,9 +5,19 @@ namespace DNADesign\AlertBanners\Control;
 use DateTime;
 use DNADesign\AlertBanners\Model\AlertBanner;
 use SilverStripe\Core\Extension;
+use SilverStripe\View\Requirements;
 
 class ControllerExtension extends Extension
 {
+
+    /**
+     * Load the required JS file
+     */
+    public function onAfterInit()
+    {
+        Requirements::javascript('dnadesign/silverstripe-alert-banners: client/dist/alert-banners.js');
+    }
+
     /**
      * Alert banners to be displayed on the front end
      * @return Datalist
