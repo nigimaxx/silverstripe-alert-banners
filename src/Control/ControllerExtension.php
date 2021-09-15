@@ -27,7 +27,7 @@ class ControllerExtension extends Extension
         return AlertBanner::get()
             ->filterByCallback(function ($alert) {
                 return $this->canDisplay($alert);
-            });
+            })->sort('SortOrder', 'ASC');
     }
 
     /**

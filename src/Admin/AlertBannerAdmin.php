@@ -9,6 +9,7 @@ use SilverStripe\Core\Config\Config;
 use SilverStripe\Forms\GridField\GridFieldExportButton;
 use SilverStripe\Forms\GridField\GridFieldImportButton;
 use SilverStripe\Forms\GridField\GridFieldPrintButton;
+use UndefinedOffset\SortableGridField\Forms\GridFieldSortableRows;
 
 class AlertBannerAdmin extends ModelAdmin
 {
@@ -55,6 +56,12 @@ class AlertBannerAdmin extends ModelAdmin
                         GridFieldPrintButton::class,
                     ]
                 );
+
+                if($model === AlertBanner::class){
+                  $config->addComponent($sortable = new GridFieldSortableRows('SortOrder'));
+                  $sortable->setAppendToTop(true);
+                  $sortable->setUpdateVersionedStage('Live');
+                }
             }
         }
         return $form;

@@ -34,6 +34,7 @@ class AlertBanner extends DataObject
         'DisplayFrom' => 'Datetime',
         'DisplayTo' => 'Datetime',
         'CookieLength' => 'Int',
+        'SortOrder' => 'Int',
     ];
 
     /**
@@ -70,10 +71,14 @@ class AlertBanner extends DataObject
         'Type',
     ];
 
-    /**
-     * @var string
-     */
-    private static $default_sort = 'ID DESC';
+    public function validate()
+    {
+        $result = parent::validate();
+        if($this->CookieLength < 1) {
+            $result->addError('Cookie length must be greater than zero');
+        }
+        return $result;
+    }
 
     /**
      * CMS Fields
@@ -83,6 +88,7 @@ class AlertBanner extends DataObject
     {
         $fields = parent::getCMSFields();
         // main tab
+        $fields->removeByName('SortOrder');
         if ($this->ID) {
             $titleField = $fields->dataFieldByName('Title');
             $titleField->setDescription($this->getPreviewLink());
@@ -90,7 +96,10 @@ class AlertBanner extends DataObject
         $contentField = $fields->dataFieldByName('Content');
         $contentField->setEditorConfig('alert-banners')->setRows(4);
         $expiryField = $fields->dataFieldByName('CookieLength');
-        $expiryField->setDescription('The of number of days that this alert banner will be hidden from a user for once they have dismissed it.');
+        $expiryField->setDescription(
+          'The of number of days that this alert banner will be hidden from a user once they have dismissed it.<br>
+          <strong>This number must be greater than zero.</strong>'
+        );
 
         // display rules tab
         if ($this->ID) {
@@ -117,8 +126,8 @@ class AlertBanner extends DataObject
         if (count($excludeOnPages)) {
             $excludeFilter['ID'] = $excludeOnPages;
         }
-        $randomPage = Page::get()->excludeAny($excludeFilter);
-        $html = '<a href="' . $randomPage->first()->AbsoluteLink() . '?stage=Stage" target="_blank">Preview</a>';
+        $page = Page::get()->excludeAny($excludeFilter);
+        $html = '<a href="' . $page->first()->AbsoluteLink() . '?stage=Stage" target="_blank">Preview</a>';
         return DBField::create_field(DBHTMLText::class, $html);
     }
 
