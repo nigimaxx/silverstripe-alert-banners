@@ -71,15 +71,6 @@ class AlertBanner extends DataObject
         'Type',
     ];
 
-    public function validate()
-    {
-        $result = parent::validate();
-        if($this->CookieLength < 1) {
-            $result->addError('Cookie length must be greater than zero');
-        }
-        return $result;
-    }
-
     /**
      * CMS Fields
      * @return FieldList
