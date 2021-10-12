@@ -118,7 +118,8 @@ class AlertBanner extends DataObject
             $excludeFilter['ID'] = $excludeOnPages;
         }
         $page = Page::get()->excludeAny($excludeFilter);
-        $html = '<a href="' . $page->first()->AbsoluteLink() . '?stage=Stage" target="_blank">Preview</a>';
+        $link = $page->count() > 0 ? $page->first()->AbsoluteLink() : null;
+        $html = isset($link) ? '<a href="' . $link . '?stage=Stage" target="_blank">Preview</a>' : '';
         return DBField::create_field(DBHTMLText::class, $html);
     }
 
