@@ -45,6 +45,10 @@ class ControllerExtension extends Extension
             }
         }
 
+        if (empty($alert->DisplayFrom) && empty($alert->DisplayTo)) {
+            $canDisplay = true;
+        }
+
         // then check if the current page is affected by any of this alert banners display rules
         if ($canDisplay && $alert->DisplayRules()->count()) {
             $currentPageID = $this->owner->ID;
