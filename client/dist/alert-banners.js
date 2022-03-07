@@ -3,35 +3,54 @@ var AlertBanners = {
      * Adds listeners to all alert banner close buttons on the current page.
      */
     init: function() {
+        var self = this;
+
         const bannerButtons = document.querySelectorAll('.alertbanner__close');
 
-        if (bannerButtons !== null) {
-            var self = this
+        bannerButtons.forEach(function(bannerClose) {
+            const bannerID = bannerClose.dataset['bannerId'],
+                banner = bannerClose.closest('.alertbanner');
+            // Don't display banners which have been dismissed.
+            if (sessionStorage.getItem(self.getStorageKey(bannerID))) {
+                banner.setAttribute('aria-hidden', 'true');
+                banner.style.display = 'none';
+                return;
+            }
+
+            // Display the banner.
+            banner.setAttribute('aria-hidden', 'false');
+        });
+
+        // Hide close button on banners if browser
+        // does not support session storage
+        if (!sessionStorage) {
+            bannerButtons.forEach(function(button) {
+                button.style.display = 'none';
+            });
+        } else if (bannerButtons !== null) {
             for (let i = 0; i < bannerButtons.length; i++) {
                 const button = bannerButtons[i];
                 button.addEventListener('click', function(e) {
                         e.preventDefault();
                         const target = e.target,
                             bannerID = target.dataset['bannerId'],
-                            cookieLength = target.dataset['cookieLength'],
                             banner = target.closest('.alertbanner');
-                        self.setCookie(bannerID, cookieLength);
+                        self.setStorage(bannerID);
                         self.hideBanner(banner);
                     }
                 );
             }
         }
     },
-
+    getStorageKey: function(id){
+        return 'alertbanner_' + id + '_dismiss';
+    },
     /*
-     * Sets a cookie to hide the alert banner next time the user visits the page
+     * Sets a sessionStorage to hide the alert banner next time the user visits the page
      */
-    setCookie: function(bannerID, cookieLength){
-        const days = parseInt(cookieLength) ? cookieLength : 30,
-            millis = (days * 86400000), // number of days * milliseconds in a day
-            date = new Date();
-        date.setTime(date.getTime() + millis);
-        document.cookie = 'hidealertbanner-' + bannerID + '=true;expires=' + date.toUTCString() + ';path=/;';
+    setStorage: function(bannerID){
+        // Make sure the banner doesn't re-appear when the page is re-loaded.
+        sessionStorage.setItem(this.getStorageKey(bannerID), 'true');
     },
 
     /*

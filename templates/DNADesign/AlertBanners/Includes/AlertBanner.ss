@@ -15,7 +15,7 @@
                 <% end_if %>
             </div>
         </div>
-        <button class="alertbanner__close" data-banner-id="$ID" data-cookie-length="$CookieLength">
+        <button class="alertbanner__close" data-banner-id="$ID">
             <span class="sr-only">Close alert</span>
         </button>
     </div>

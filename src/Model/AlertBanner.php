@@ -4,7 +4,6 @@ namespace DNADesign\AlertBanners\Model;
 
 use Page;
 use SilverStripe\CMS\Model\RedirectorPage;
-use SilverStripe\Control\Cookie;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\FieldType\DBField;
 use SilverStripe\ORM\FieldType\DBHTMLText;
@@ -33,15 +32,7 @@ class AlertBanner extends DataObject
         'Content' => 'HTMLText',
         'DisplayFrom' => 'Datetime',
         'DisplayTo' => 'Datetime',
-        'CookieLength' => 'Int',
         'SortOrder' => 'Int',
-    ];
-
-    /**
-     * @var array
-     */
-    private static $defaults = [
-        'CookieLength' => 30
     ];
 
     /**
@@ -86,11 +77,6 @@ class AlertBanner extends DataObject
         }
         $contentField = $fields->dataFieldByName('Content');
         $contentField->setEditorConfig('alert-banners')->setRows(4);
-        $expiryField = $fields->dataFieldByName('CookieLength');
-        $expiryField->setDescription(
-          'The of number of days that this alert banner will be hidden from a user once they have dismissed it.<br>
-          <strong>This number must be greater than zero.</strong>'
-        );
 
         // display rules tab
         if ($this->ID) {
@@ -184,16 +170,6 @@ class AlertBanner extends DataObject
             $ids = array_merge($ids, $page->getDescendantIDList());
         }
         return $ids;
-    }
-
-    /**
-     * When a user clicks the close button on an alert banner a cookie is created
-     * This function checks if the cookie is set for the alert banner so the user won't be shown it again until the cookie expires
-     * @return boolean
-     */
-    public function HideBanner()
-    {
-        return Cookie::get('hidealertbanner-' . $this->ID);
     }
 
     /**
