@@ -1,4 +1,4 @@
-<div class="alertbanner alertbanner--$Modifier" role='alert'>
+<div class="alertbanner alertbanner--$Modifier" role='alert' aria-hidden='true' style="display:none;">
     <div class="alertbanner__inner">
         <div class="alertbanner__icon">
             &nbsp;

@@ -11,14 +11,11 @@ var AlertBanners = {
             const bannerID = bannerClose.dataset['bannerId'],
                 banner = bannerClose.closest('.alertbanner');
             // Don't display banners which have been dismissed.
-            if (sessionStorage.getItem(self.getStorageKey(bannerID))) {
-                banner.setAttribute('aria-hidden', 'true');
-                banner.style.display = 'none';
+            if (!sessionStorage.getItem(self.getStorageKey(bannerID))) {
+                banner.setAttribute('aria-hidden', 'false');
+                banner.style.display = '';
                 return;
             }
-
-            // Display the banner.
-            banner.setAttribute('aria-hidden', 'false');
         });
 
         // Hide close button on banners if browser
