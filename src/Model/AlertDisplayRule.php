@@ -5,7 +5,7 @@ namespace DNADesign\AlertBanners\Model;
 use SilverStripe\Forms\TreeDropdownField;
 use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\ORM\DataObject;
-use SilverStripe\Versioned\Versioned;
+use SilverStripe\Security\Permission;
 
 class AlertDisplayRule extends DataObject
 {
@@ -63,5 +63,43 @@ class AlertDisplayRule extends DataObject
             )
         );
         return $fields;
+    }
+
+
+    /**
+    * @param mixed $member
+    * @param array $context
+    * @return boolean
+    */
+    public function canCreate($member = null, $context = [])
+    {
+        return Permission::check('CMS_ACCESS_DNADesign\AlertBanners\Admin\AlertBannerAdmin');
+    }
+
+    /**
+    * @param mixed $member
+    * @return boolean
+    */
+    public function canDelete($member = null)
+    {
+        return Permission::check('CMS_ACCESS_DNADesign\AlertBanners\Admin\AlertBannerAdmin');
+    }
+
+    /**
+    * @param mixed $member
+    * @return boolean
+    */
+    public function canEdit($member = null)
+    {
+        return Permission::check('CMS_ACCESS_DNADesign\AlertBanners\Admin\AlertBannerAdmin');
+    }
+
+    /**
+    * @param mixed $member
+    * @return boolean
+    */
+    public function canView($member = null)
+    {
+        return Permission::check('CMS_ACCESS_DNADesign\AlertBanners\Admin\AlertBannerAdmin');
     }
 }

@@ -7,6 +7,7 @@ use SilverStripe\CMS\Model\RedirectorPage;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\FieldType\DBField;
 use SilverStripe\ORM\FieldType\DBHTMLText;
+use SilverStripe\Security\Permission;
 use SilverStripe\Versioned\Versioned;
 
 class AlertBanner extends DataObject
@@ -179,5 +180,42 @@ class AlertBanner extends DataObject
     public function Modifier()
     {
         return strtolower($this->Type);
+    }
+
+    /**
+    * @param mixed $member
+    * @param array $context
+    * @return boolean
+    */
+    public function canCreate($member = null, $context = [])
+    {
+        return Permission::check('CMS_ACCESS_DNADesign\AlertBanners\Admin\AlertBannerAdmin');
+    }
+
+    /**
+    * @param mixed $member
+    * @return boolean
+    */
+    public function canDelete($member = null)
+    {
+        return Permission::check('CMS_ACCESS_DNADesign\AlertBanners\Admin\AlertBannerAdmin');
+    }
+
+    /**
+    * @param mixed $member
+    * @return boolean
+    */
+    public function canEdit($member = null)
+    {
+        return Permission::check('CMS_ACCESS_DNADesign\AlertBanners\Admin\AlertBannerAdmin');
+    }
+
+    /**
+    * @param mixed $member
+    * @return boolean
+    */
+    public function canView($member = null)
+    {
+        return Permission::check('CMS_ACCESS_DNADesign\AlertBanners\Admin\AlertBannerAdmin');
     }
 }
