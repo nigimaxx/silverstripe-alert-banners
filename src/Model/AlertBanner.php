@@ -4,6 +4,9 @@ namespace DNADesign\AlertBanners\Model;
 
 use Page;
 use SilverStripe\CMS\Model\RedirectorPage;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Forms\DropdownField;
+use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\FieldType\DBField;
 use SilverStripe\ORM\FieldType\DBHTMLText;
@@ -29,7 +32,7 @@ class AlertBanner extends DataObject
      */
     private static $db = [
         'Title' => 'Varchar(255)',
-        'Type' =>  'Enum("Info, Warning, Error")',
+        'Type' =>  'Varchar(50)',
         'Content' => 'HTMLText',
         'DisplayFrom' => 'Datetime',
         'DisplayTo' => 'Datetime',
@@ -64,6 +67,17 @@ class AlertBanner extends DataObject
     ];
 
     /**
+     * Default alert types (if not disabled)
+     *
+     * @return array
+     */
+    private static $alert_types = [
+        'Info',
+        'Warning',
+        'Error',
+    ];
+
+    /**
      * CMS Fields
      * @return FieldList
      */
@@ -90,6 +104,23 @@ class AlertBanner extends DataObject
                 </p>'
             );
         }
+
+
+        // Fetch alert types from configuration
+        $alertTypes = Config::inst()->get(static::class, 'alert_types');
+        if (!empty($alertTypes)) {
+            $dropdown = DropdownField::create('Type', 'Alert Type', array_combine($alertTypes, $alertTypes));
+            $fields->addFieldToTab('Root.Main', $dropdown);
+        } else {
+            $fields->removeByName('Type');
+        }
+
+        // Fetch and set editor configuration for HTML editor
+        $contentField = $fields->dataFieldByName('Content');
+        $editorConfigName = $this->config()->get('editor_config');
+        $htmlEditor = $contentField->setEditorConfig($editorConfigName ?: 'alert-banners')->setRows(4);
+        $fields->addFieldToTab('Root.Main', $htmlEditor);
+
         return $fields;
     }
 
