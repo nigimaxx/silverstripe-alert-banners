@@ -6,7 +6,6 @@ use Page;
 use SilverStripe\CMS\Model\RedirectorPage;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Forms\DropdownField;
-use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\FieldType\DBField;
 use SilverStripe\ORM\FieldType\DBHTMLText;
@@ -130,14 +129,20 @@ class AlertBanner extends DataObject
      */
     public function getPreviewLink()
     {
+        if (Config::inst()->get(self::class, 'disable_preview')) {
+            return null;
+        }
+
         $excludeFilter = ['ClassName' => RedirectorPage::class];
         $excludeOnPages = $this->getArrayOfExcludedPageIDs();
         if (count($excludeOnPages)) {
             $excludeFilter['ID'] = $excludeOnPages;
         }
+        
         $page = Page::get()->excludeAny($excludeFilter);
         $link = $page->count() > 0 ? $page->first()->AbsoluteLink() : null;
         $html = isset($link) ? '<a href="' . $link . '?stage=Stage" target="_blank">Preview</a>' : '';
+        
         return DBField::create_field(DBHTMLText::class, $html);
     }
 
@@ -210,7 +215,7 @@ class AlertBanner extends DataObject
      */
     public function Modifier()
     {
-        return strtolower($this->Type);
+        return strtolower($this->Type ?: '');
     }
 
     /**

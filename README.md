@@ -26,3 +26,12 @@ MyNamespace\MyClass:
 ```
 
  If no editor_config is defined, the default editor settings will be used.
+
+ ## Configuration
+
+ The preview link can be disabled in .yml configuration
+
+ ```yaml
+DNADesign\AlertBanners\Model\AlertBanner:
+  disable_preview: true
+ ```
